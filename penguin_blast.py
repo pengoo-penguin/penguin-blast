@@ -1,3 +1,5 @@
+# TODO name vlt ändern, bot fertig, display fertig, loop im dpiel, mehrere modus mit merheren runden machen
+
 from random import randint
 
 class Penguin(object):
