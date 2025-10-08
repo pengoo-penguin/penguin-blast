@@ -4,9 +4,8 @@ from random import randint
 
 class Penguin(object):
     MAX_HEALTH = 100
-
-    __slots__ = ['status', 'max_health', '__strength', '__defence', '__aim', '__speed', '__healthpoints', '__multiplier', '__coins', 'alive']
-
+    __slots__ = ['_Penguin__strength', '_Penguin__defence', '_Penguin__aim', '_Penguin__speed', '_Penguin__healthpoints', '_Penguin__multiplier', '_Penguin__coins', '_Penguin__inventory', 'status', 'max_health', 'alive']
+    
     def __init__(self):
         self.status = 'normal'
 
@@ -209,11 +208,13 @@ class Penguin(object):
 
         
 class Player(Penguin):
+    __slots__ = ['_Player__name']
     def __init__(self, name):
         Penguin.__init__(self)
         self.__name = name
     
     def get_name(self):
+        __slots__ = ['_Bot__name']
         return self.__name
         
 
@@ -233,14 +234,14 @@ class Shop(object):
     upgrade_cost = 10 
     def __init__(self):
         self.items = {
-            'Unsichtbarkeitsumhang':{'Der Pinguin wird unsichtbar und kann nicht getroffen werden!': 10,}
-            'Pflaster':{'Heilt 10 HP (nur einmalig nutzbar)': 10,}
-            'Pfeil & Bogen':{'erhalte Pfeil und Bogen für den Rest der Runde und erziele doppelt so vielen Schaden!':20,}
-            'Kettensäge':{'Erhlte eine Kettensäge für den Rest der Runde und erziele 3x so vielen Schaden!':30,}
-            'Revolver':{'erhalte einen Revolver für den Rest der Runde der 4x so viel Schaden macht! (schreibe r um Russich Roulette zu spielen)':40,}
-            'Auto':{'Fahre für den Rest der Runde mit einem Auto rum und erschwere deinen Gegner so, dich zu treffen!':50,}
-            'Medizinkoffer':{'Heilt den Pinguin komplett!':50,}
-            'Superman Anzug':{'Werde stärker & schneller & robuster für den ganzen Rest der Runde!':100,}
+            'Unsichtbarkeitsumhang': 10, # {'Der Pinguin wird unsichtbar und kann nicht getroffen werden!':
+            'Pflaster':10, #{'Heilt 10 HP (nur einmalig nutzbar)': 
+            'Pfeil & Bogen':20, #{'erhalte Pfeil und Bogen für den Rest der Runde und erziele doppelt so vielen Schaden!'
+            'Kettensäge':30, #{'Erhlte eine Kettensäge für den Rest der Runde und erziele 3x so vielen Schaden!':
+            'Revolver':40, #{'erhalte einen Revolver für den Rest der Runde der 4x so viel Schaden macht! (schreibe r um Russich Roulette zu spielen)':
+            'Auto':50, #{'Fahre für den Rest der Runde mit einem Auto rum und erschwere deinen Gegner so, dich zu treffen!':
+            'Medizinkoffer':50, #:{'Heilt den Pinguin komplett!'
+            'Superman Anzug':100, #:{'Werde stärker & schneller & robuster für den ganzen Rest der Runde!'
         }
         self.upgrades = [
             'Stärke',
@@ -250,11 +251,14 @@ class Shop(object):
         ]
     def buy(self, player, purchase_type, purchase):
         if purchase_type == 'item':
-            if player.get_coins >= self.items
+            if player.get_coins() >= self.items.get(purchase):
                 player.add_item(self.items[purchase])
-        else:
+                player.remove_coins(self.items.get(purchase))
+            else:
+                print(player.get_name(), 'hat nicht genug Geld.'
+        if purchase_type=='upgrade':
             if purchase==self.upgrades[0]:
-                if player.get_coins >= Shop.upgrade_cost:
+                if player.get_coins() >= Shop.upgrade_cost:
                     player.set_strength(10)
                     player.remove_coins(Shop.upgrade_cost)
                 else:
@@ -283,9 +287,10 @@ class Shop(object):
             
                 
 class Game(object):
-    def __init__(self, player1, player2):
+    def __init__(self, player1, player2, game_shop):
         self.player1 = player1
         self.player2 = player2
+        self.shop = game_shop
         
     def start_round(self):
         if randint(0,1) == 0:
@@ -301,7 +306,8 @@ class Game(object):
                  "3: Recharge (erhöht den Multiplikator für den nächsten Angriff)\n"
                  "4: Schneeball Rampage (glücksbasierter Schneeballangriff)\n"
                  "5: Stats anzeigen\n"
-                 "Zahl zwischen 1 & 5 eingeben: ")
+                 "6: Shop\n"
+                 "Zahl zwischen 1 & 6 eingeben: ")
         
         valid_input = False
         while not valid_input:
