@@ -1,9 +1,9 @@
-from colorama import *
+# -*- coding: utf-8 -*-
 from random import randint
 
 class Penguin(object):
     MAX_HEALTH = 100
-    __slots__ = ['_Penguin__strength', '_Penguin__defence', '_Penguin__aim', '_Penguin__speed', '_Penguin__healthpoints', '_Penguin__multiplier', '_Penguin__coins', '_Penguin__inventory', 'status', 'max_health', 'alive']
+    __slots__ = ['_Penguin__strength', '_Penguin__defence', '_Penguin__aim', '_Penguin__speed', '_Penguin__healthpoints', '_Penguin__multiplier', '_Penguin__coins', '_Penguin__inventory', 'status', 'max_health','wins', 'alive']
     
     def __init__(self):
         self.status = 'normal'
@@ -17,7 +17,8 @@ class Penguin(object):
         self.__multiplier = 1
         self.__coins = 0
         self.__inventory = []
-        
+
+        self.wins = 0
         self.alive = True
         
     def __str__(self):
@@ -201,7 +202,7 @@ class Penguin(object):
         if snowballs < 50:
             return 0
         else:
-            damage = snowballs * 0.01
+            damage = snowballs * 0.01 * self.__strength
             return damage
 
 
@@ -213,11 +214,11 @@ class Player(Penguin):
         self.__name = name
     
     def get_name(self):
-        __slots__ = ['_Bot__name']
         return self.__name
         
 
 class Bot(Penguin):
+    __slots__ = ['_Bot__name']
     def __init__(self, name):
         Penguin.__init__(self)
         self.__name = name
@@ -226,47 +227,70 @@ class Bot(Penguin):
         return self.__name
 
     def choose_action(self, opponent):
-    health_ratio = self.get_health() / Penguin.MAX_HEALTH
-    if health_ratio < 0.3 and "Medizinkoffer" in self.get_inventory():
-        return "6"  
-    elif health_ratio < 0.5:
-        return "3"  
-    elif opponent.get_health() < 20:
-        return "1"  
-    else:
-        return "4"  
+        if self.get_coins() >= 10:
+            return "6"  
         
+        health_ratio = self.get_health() / Penguin.MAX_HEALTH
+        if health_ratio < 0.3 and "Medizinkoffer" in self.get_inventory():
+            return "6"  
+        elif health_ratio < 0.5:
+            return "3"  
+        elif opponent.get_health() < 20:
+            return "1"  
+        else:
+            return "4"
+            
+    def choose_purchase(self):
+        coins = self.get_coins()
+        health = self.get_health()
+        
+        if health < 30 and coins >= 60:
+            return 7  
+        elif coins >= 70:
+            return 8  
+        elif coins >= 40:
+            return 5 
+        elif coins >= 20:
+            return 3  
+        elif coins >= 10:
+            return 2
+        
+        return None
 
 
 class Shop(object):
     upgrade_cost = 10 
     def __init__(self):
         self.items = {
-            1 : 10,
-            2 : 10,
-            3 : 20, 
-            4 : 30,
-            5 : 40, 
-            6 : 50, 
-            7 : 50,
-            8 : 100, 
+             1: 10,  # Unsichtbarkeitsumhang
+             2: 10,  # Pflaster
+             3: 20,  # Pfeil & Bogen
+             4: 30,  # Kettensäge
+             5: 40,  # Pistole
+             6: 50,  # Auto
+             7: 60,  # Medizinkoffer
+             8: 70,  # Superman Anzug
         }
         self.upgrades = [
             'Stärke',
             'Verteidigung',
-            'Zielgenauigkeit',
+            'Zielgenauigkeit', 
             'Geschwindigkeit'
         ]
+
     def buy(self, player, purchase_type, purchase):
         if purchase_type == 'item':
             if purchase in self.items:
-                if player.get_coins() >= self.items[purchase]:
+                cost = self.items[purchase]
+                if player.get_coins() >= cost:
+                    player.remove_coins(cost)
                     player.add_item(purchase)
-                    player.remove_coins(self.items[purchase])
+                    print(f"{player.get_name()} hat Item {purchase} gekauft!")
+                    return True
                 else:
                     print(f"{player.get_name()} hat nicht genug Geld.")
-            else:
-                print(f"{purchase} ist kein gültiges Item.")
+                    return False
+            
         elif purchase_type == 'upgrade':
             if purchase in self.upgrades:
                 if player.get_coins() >= self.upgrade_cost:
@@ -279,10 +303,14 @@ class Shop(object):
                     elif purchase == 'Geschwindigkeit':
                         player.set_speed(10)
                     player.remove_coins(self.upgrade_cost)
+                    print(f"{player.get_name()} hat {purchase} verbessert!")
+                    return True
                 else:
                     print(f"{player.get_name()} hat nicht genug Geld.")
+                    return False
             else:
                 print(f"{purchase} ist kein gültiges Upgrade.")
+                return False
     
     def __str__(self):
         return f'''
@@ -326,12 +354,16 @@ class Shop(object):
         der Runde)
         ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
         ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-        
+        (9) Stärke Upgrade                                   10 💵
+        ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+        (10) Verteidigung Upgrade                            10 💵
+        ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+        (11) Zielgenauigkeit Upgrade                         10 💵
+        ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+        (12) Geschwindigkeit Upgrade                         10 💵
         ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
         ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
         ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-
-
         '''
             
                 
@@ -341,14 +373,17 @@ class Game(object):
         self.player2 = player2
         self.shop = game_shop
         
-    def start_round(self):
         if randint(0,1) == 0:
             self.attacking_player = self.player1
             self.defending_player = self.player2
+            print(f"\n{self.player1.get_name()} greift zuerst an!")
         else:
             self.attacking_player = self.player2
             self.defending_player = self.player1
-            
+            print(f"\n{self.player2.get_name()} greift zuerst an!")
+
+    def start_turn(self):
+
         prompt = (f"\n{self.attacking_player.get_name()}, Wähle einen Angriff aus:\n"
                  "1: Normaler Angriff (Schaden basiert auf den Attributen)\n"
                  "2: Fish Slap (garantierter Treffer mit wenigen Schaden)\n"
@@ -360,7 +395,11 @@ class Game(object):
         
         valid_input = False
         while not valid_input:
-            attacking_mode = input(prompt)
+            if isinstance(self.attacking_player, Bot):
+                attacking_mode = self.attacking_player.choose_action(self.defending_player)
+                print(f"\n{self.attacking_player.get_name()} wählt Aktion {attacking_mode}")
+            else:
+                attacking_mode = input(prompt)
             
             if attacking_mode == "1":
                 damage = self.attacking_player.attack(self.defending_player)
@@ -396,31 +435,62 @@ class Game(object):
                     print(f"{self.attacking_player.get_name()} beschwört mehrere Schneebälle, verfehlt aber alle...")
                 else:
                     self.defending_player.take_damage(damage)
-                    print(f"{self.attacking_player.get_name()} beschwört {damage*100} Schneebälle und wirft alle auf {self.defending_player.get_name()} mit {damage} Schaden!")
-                    
+                    print(f"{self.attacking_player.get_name()} beschwört mehrere ‚Schneebälle und trifft mit {damage} Schaden!")
+     
                     if not self.defending_player.alive:
                         print(f"{self.defending_player.get_name()} ist tot!")
                 valid_input = True
             
             elif attacking_mode == "5":
-                print(f"{self.attacking_player.get_name()} Stats:\n"
+                print(f"\n{self.attacking_player.get_name()} Stats:\n"
                     f"Stärke: {self.attacking_player.get_strength()}\n"
                     f"Verteidigung: {self.attacking_player.get_defence()}\n"
                     f"Zielgenauigkeit: {self.attacking_player.get_aim()}\n"
                     f"Geschwindigkeit: {self.attacking_player.get_speed()}\n"
-                    f"Lebenspunkte: {self.attacking_player.get_health()}\n")
+                    f"Lebenspunkte: {self.attacking_player.get_health()}/{Penguin.MAX_HEALTH}\n"
+                    f"Geld: {self.attacking_player.get_coins()} 💵\n")
+
             elif attacking_mode == "6":
-                print(shop)
-                purchase = ''
-                while purchase not in [i for i in range [1,12]]:
-                    purchase = input('Gebe eine Zahl zwischen 1 und 12')
-                    if purchase not in [i for i in range [1,12]]:
-                        print('Ungültige Eingabe. Bitte wähle eine Zahl zwischen 1 und 12')
-                
+                print(self.shop) 
+                if isinstance(self.attacking_player, Bot):
+                    purchase = self.attacking_player.choose_purchase()
+                    if purchase:
+                        self.shop.buy(self.attacking_player, 'item', purchase)
+                    else:
+                        print(f"{self.attacking_player.get_name()} hat nicht genug Geld für Einkäufe.")
+                    valid_input = True
+                else:
+                    print(f"{self.attacking_player.get_name()}, du hast {self.attacking_player.get_coins()} 💵.")
+                    purchase = ''
+                    while not purchase.isdigit() or int(purchase) not in range(1, 13):
+                        purchase = input('Gebe eine Zahl zwischen 1 und 12 ein (oder 0 wenn du nichts kaufen willst): ')
+                        if purchase == '0':
+                            print(self.attacking_player.get_name() + " hat nichts gekauft.")
+                            break
+                        if not purchase.isdigit() or int(purchase) not in range(1, 13):
+                            print('Ungültige Eingabe. Bitte wähle eine Zahl zwischen 1 und 12 (oder halt 0)')
+                    if purchase != '0':
+                        purchase_num = int(purchase)
+                        if purchase_num <= 8:
+                            self.shop.buy(self.attacking_player, 'item', purchase_num)
+                        else:
+                            upgrades = {
+                                9: 'Stärke',
+                                10: 'Verteidigung', 
+                                11: 'Zielgenauigkeit',
+                                12: 'Geschwindigkeit'
+                            }
+                            self.shop.buy(self.attacking_player, 'upgrade', upgrades[purchase_num])
+                        valid_input = True
             else:
-                print(f"Ungültige Eingabe. Bitte wähle eine Zahl zwischen 1 und 5.")
+                print(f"Ungültige Eingabe. Bitte wähle eine Zahl zwischen 1 und 6.")
+                attacking_mode = ''
+
+        if self.attacking_player.alive and self.defending_player.alive:
+            self.attacking_player, self.defending_player = self.defending_player, self.attacking_player
 
 if __name__ == "__main__":
+    # Zeige Titel nur einmal
     print(f'''__________                            .__         __________.____       _____    ____________________
 \______   \ ____   ____    ____  __ __|__| ____   \______   \    |     /  _  \  /   _____/\__    ___/
  |     ___// __ \ /    \  / ___\|  |  \  |/    \   |    |  _/    |    /  /_\  \ \_____  \   |    |   
@@ -431,47 +501,165 @@ if __name__ == "__main__":
       -./\\\\ //\.-
        _\_U U_/_         ''')
     
-    print(f"Hier kämpfen 2 Pinguine gegeneinander! Man kann zwischen mehreren Angriffen auswählen und im Shop die Pinguine upgraden! Jeder Pinguin hat 5 Attribute: Stärke, Verteidigung, Zielgenauigkeit, Geschwindigkeit und Lebenspunkte. Viel Glück!\n")
+    print(f"Kämpft als Pinguine gegeneinader! Man kann zwischen mehreren Angriffen auswählen und im Shop die Pinguine upgraden!")
+    print(f"Jeder Pinguin hat 5 Attribute: Stärke, Verteidigung, Zielgenauigkeit, Geschwindigkeit und Lebenspunkte.")
+    print(f"Der erste Pinguin, der 2 Runden gewinnt, gewinnt das Spiel! Viel Glück!\n")
     
-    #ERSTELLUNG DER SPIELER
-    player1_type = ""
-    while player1_type not in ["1", "2"]:
-        player1_type = input(f"Wähle die Art des ersten Pinguins (1: Spieler, 2: Bot): ")
-        if player1_type not in ["1", "2"]:
-            print(f"Ungültige Eingabe. Bitte wähle 1 oder 2.")
+    # ✅ HAUPT-GAME-LOOP
+    keep_playing = True
     
-    if player1_type == "1":
-        player1_name = input(f"Gib den Namen des ersten Pinguins ein: ")
-        player1 = Player(player1_name)
-    else:  
-        player1_name = "Bot_1"
-        player1 = Bot(player1_name)
+    while keep_playing:
+        # ERSTELLUNG DER SPIELER
+        player1_type = ""
+        while player1_type not in ["1", "2"]:
+            player1_type = input(f"\nWähle die Art des ersten Pinguins (1: Spieler, 2: Bot): ")
+            if player1_type not in ["1", "2"]:
+                print(f"Ungültige Eingabe. Bitte wähle 1 oder 2.")
+        
+        if player1_type == "1":
+            player1_name = input(f"Gib den Namen des ersten Pinguins ein: ")
+            player1 = Player(player1_name)
+        else:  
+            player1_name = "Bot_1"
+            player1 = Bot(player1_name)
 
-    print(f"Der erste Pinguin ist {player1_name}!")
-    print(player1)
+        print(f"\nDer erste Pinguin ist {player1_name}!")
+        print(player1)
 
+        player2_type = ""
+        while player2_type not in ["1", "2"]:
+            player2_type = input(f"\nWähle die Art des zweiten Pinguins (1: Spieler, 2: Bot): ")
+            if player2_type not in ["1", "2"]:
+                print(f"Ungültige Eingabe. Bitte wähle 1 oder 2.")
 
-    player2_type = ""
-    while player2_type not in ["1", "2"]:
-        player2_type = input(f"Wähle die Art des zweiten Pinguins (1: Spieler, 2: Bot): ")
-        if player2_type not in ["1", "2"]:
-            print(f"Ungültige Eingabe. Bitte wähle 1 oder 2.")
-
-    if player2_type == "1":
-        player2_name = input(f"Gib den Namen des zweiten Pinguins ein: ")
-        while player2_name == player1_name:
-            print(f"Der Name ist bereits vergeben. Bitte wähle einen anderen Namen.")
+        if player2_type == "1":
             player2_name = input(f"Gib den Namen des zweiten Pinguins ein: ")
-        player2 = Player(player2_name)
-    else:
-        player2_name = "Bot_2"
-        player2 = Bot(player2_name)
+            while player2_name == player1_name:
+                print(f"Der Name ist bereits vergeben. Bitte wähle einen anderen Namen.")
+                player2_name = input(f"Gib den Namen des zweiten Pinguins ein: ")
+            player2 = Player(player2_name)
+        else:
+            if player1_name == "Bot_1":
+                player2_name = "Bot_2"
+            else:
+                player2_name = "Bot_1"
+            player2 = Bot(player2_name)
 
-    print(f"Der zweite Pinguin ist {player2_name}!")
-    print(player2)
+        print(f"\nDer zweite Pinguin ist {player2_name}!")
+        print(player2)
 
-    shop = Shop()
-    game = Game(player1, player2, shop)
-    while player1.alive and player2.alive:
-        game.start_round()
-    print("Spiel beendet!")
+        shop = Shop()
+        
+        # Best of 3 - First to 2 wins!
+        rounds_to_win = 2
+        battle_number = 1
+        
+        while player1.wins < rounds_to_win and player2.wins < rounds_to_win:
+            print(f"\n{'='*60}")
+            print(f"🏆 KAMPF #{battle_number} 🏆".center(60))
+            print(f"{player1.get_name()}: {player1.wins} Siege | {player2.get_name()}: {player2.wins} Siege".center(60))
+            print(f"{'='*60}\n")
+            
+            # Reset für neuen Kampf
+            player1._Penguin__healthpoints = Penguin.MAX_HEALTH
+            player1.alive = True
+            player1.status = 'normal'
+            
+            player2._Penguin__healthpoints = Penguin.MAX_HEALTH
+            player2.alive = True
+            player2.status = 'normal'
+            
+            # Neues Spiel für diesen Kampf
+            game = Game(player1, player2, shop)
+            turn_counter = 0
+            
+            # Kampf bis einer stirbt
+            while player1.alive and player2.alive:
+                game.start_turn()
+                turn_counter += 1
+            
+            # Gewinner dieses Kampfes
+            if player1.alive:
+                player1.wins += 1
+                winner = player1
+                loser = player2
+                print(f"\n🎉 {player1.get_name()} gewinnt Kampf #{battle_number}! 🎉")
+            else:
+                player2.wins += 1
+                winner = player2
+                loser = player1
+                print(f"\n🎉 {player2.get_name()} gewinnt Kampf #{battle_number}! 🎉")
+            
+            # Belohnungen
+            winner_coins = 50 + (turn_counter * 5)
+            loser_coins = 20
+            
+            winner.add_coins(winner_coins)
+            loser.add_coins(loser_coins)
+            
+            print(f"💰 {winner.get_name()} erhält {winner_coins} 💵")
+            print(f"💰 {loser.get_name()} erhält {loser_coins} 💵")
+            
+            # Prüfe ob jemand gewonnen hat
+            if player1.wins >= rounds_to_win or player2.wins >= rounds_to_win:
+                break
+            
+            # Shop-Angebot
+            if isinstance(winner, Player):
+                shop_choice = input(f"\n{winner.get_name()}, möchtest du den Shop besuchen? (j/n): ")
+                if shop_choice.lower() == 'j':
+                    print(shop)
+                    print(f"Du hast {winner.get_coins()} 💵")
+                    purchase = input("Was möchtest du kaufen? (1-12 oder 0 für nichts): ")
+                    if purchase != '0' and purchase.isdigit():
+                        purchase_num = int(purchase)
+                        if 1 <= purchase_num <= 8:
+                            shop.buy(winner, 'item', purchase_num)
+                        elif 9 <= purchase_num <= 12:
+                            upgrades = {9: 'Stärke', 10: 'Verteidigung', 11: 'Zielgenauigkeit', 12: 'Geschwindigkeit'}
+                            shop.buy(winner, 'upgrade', upgrades[purchase_num])
+            
+            # Bot kauft automatisch
+            if isinstance(winner, Bot):
+                purchase = winner.choose_purchase()
+                if purchase:
+                    shop.buy(winner, 'item', purchase)
+            
+            battle_number += 1
+            
+            if player1.wins < rounds_to_win and player2.wins < rounds_to_win:
+                input("\n⏸️ Drücke Enter für den nächsten Kampf...")
+        
+        # FINALER GEWINNER
+        print("\n" + "="*60)
+        print("🏆🎊 SPIEL BEENDET! 🎊🏆".center(60))
+        print("="*60)
+        
+        if player1.wins >= rounds_to_win:
+            print(f"\n{'🎉'*20}")
+            print(f"🏆 {player1.get_name()} IST DER CHAMPION! 🏆".center(60))
+            print(f"{'🎉'*20}\n")
+            print(player1)
+        else:
+            print(f"\n{'🎉'*20}")
+            print(f"🏆 {player2.get_name()} IST DER CHAMPION! 🏆".center(60))
+            print(f"{'🎉'*20}\n")
+            print(player2)
+        
+        print(f"\nEndstand: {player1.get_name()} {player1.wins} : {player2.wins} {player2.get_name()}")
+        
+        # ✅ FRAGE OB NOCHMAL SPIELEN
+        print("\n" + "="*60)
+        play_again = ""
+        while play_again not in ["j", "n"]:
+            play_again = input("Nochmal spielen? (j/n): ").lower()
+            if play_again not in ["j", "n"]:
+                print("Bitte 'j' für Ja oder 'n' für Nein eingeben.")
+        
+        if play_again == "n":
+            keep_playing = False
+            print("\n🐧 Danke fürs Spielen! Bis zum nächsten Mal! 🐧")
+        else:
+            print("\n" + "="*60)
+            print("🔄 NEUES SPIEL STARTET! 🔄".center(60))
+            print("="*60)
