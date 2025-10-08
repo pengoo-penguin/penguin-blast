@@ -127,15 +127,23 @@ class Penguin(object):
     
     def get_strength(self):
         return self.__strength
-    
+    def set_strength(self, upgrade):
+        self.__strength+=upgrade
+        
     def get_defence(self):
         return self.__defence
+    def set_defence(self, upgrade):
+        self.__defence+=upgrade
     
     def get_aim(self):
         return self.__aim
+    def set_aim(self, upgrade):
+        self.__aim+=upgrade
     
     def get_speed(self):
         return self.__speed
+    def set_speed(self, upgrade):
+        self.__speed+=upgrade
     
     def get_health(self):
         return self.__healthpoints
@@ -148,11 +156,7 @@ class Penguin(object):
     def add_coins(self, amount):
         self.__coins += amount
     def remove_coins(self, amount):
-        if amount > self.__coins:
-            return False
-        else:
-            self.__coins -= amount
-            return True
+        self.__coins -= amount
     
     def get_inventory(self):
         return self.__inventory
@@ -238,16 +242,46 @@ class Shop(object):
             'Medizinkoffer':{'Heilt den Pinguin komplett!':50,}
             'Superman Anzug':{'Werde stärker & schneller & robuster für den ganzen Rest der Runde!':100,}
         }
-        self.upgrades = {
-            'Stärke':Shop.upgrade_cost,
-            'Verteidigung':Shop.upgrade_cost,
-            'Zielgenauigkeit':Shop.upgrade_cost,
-            'Geschwindigkeit':Shop.upgrade_cost
-        }
+        self.upgrades = [
+            'Stärke',
+            'Verteidigung',
+            'Zielgenauigkeit',
+            'Geschwindigkeit'
+        ]
     def buy(self, player, purchase_type, purchase):
         if purchase_type == 'item':
-            player.add_item(self.items[purchase])
-
+            if player.get_coins >= self.items
+                player.add_item(self.items[purchase])
+        else:
+            if purchase==self.upgrades[0]:
+                if player.get_coins >= Shop.upgrade_cost:
+                    player.set_strength(10)
+                    player.remove_coins(Shop.upgrade_cost)
+                else:
+                    print(player.get_name(), 'hat nicht genug Geld.'
+                    
+            if purchase==self.upgrades[1]:
+                if player.get_coins >= Shop.upgrade_cost:
+                    player.set_defence(10)
+                    player.remove_coins(Shop.upgrade_cost)
+                else:
+                    print(player.get_name(), 'hat nicht genug Geld.'
+            
+            if purchase==self.upgrades[2]:
+                if player.get_coins >= Shop.upgrade_cost:
+                    player.set_aim(10)
+                    player.remove_coins(Shop.upgrade_cost)
+                else:
+                    print(player.get_name(), 'hat nicht genug Geld.'
+            
+            if purchase==self.upgrades[3]:
+                if player.get_coins >= Shop.upgrade_cost:
+                    player.set_speed(10)
+                    player.remove_coins(Shop.upgrade_cost)
+                else:
+                    print(player.get_name(), 'hat nicht genug Geld.'
+            
+                
 class Game(object):
     def __init__(self, player1, player2):
         self.player1 = player1
