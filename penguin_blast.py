@@ -229,14 +229,14 @@ class Shop(object):
     upgrade_cost = 10 
     def __init__(self):
         self.items = {
-            {'Unsichtbarkeitsumhang':'Der Pinguin wird unsichtbar und kann nicht getroffen werden!'}: 10,
-            {'Pflaster':'Heilt 10 HP (nur einmalig nutzbar)'}: 10,
-            {'Pfeil & Bogen':'erhalte Pfeil und Bogen für den Rest der Runde und erziele doppelt so vielen Schaden!'}:20,
-            {'Kettensäge':'Erhlte eine Kettensäge für den Rest der Runde und erziele 3x so vielen Schaden!'}:30,
-            {'Revolver':'erhalte einen Revolver für den Rest der Runde der 4x so viel Schaden macht! (schreibe r um Russich Roulette zu spielen)'}:40,
-            {'Auto':'Fahre für den Rest der Runde mit einem Auto rum und erschwere deinen Gegner so, dich zu treffen!'}:50,
-            {'Medizinkoffer':'Heilt den Pinguin komplett!'}:50,
-            {'Superman Anzug':'Werde stärker & schneller & robuster für den ganzen Rest der Runde!'}:100,
+            'Unsichtbarkeitsumhang':{'Der Pinguin wird unsichtbar und kann nicht getroffen werden!': 10,}
+            'Pflaster':{'Heilt 10 HP (nur einmalig nutzbar)': 10,}
+            'Pfeil & Bogen':{'erhalte Pfeil und Bogen für den Rest der Runde und erziele doppelt so vielen Schaden!':20,}
+            'Kettensäge':{'Erhlte eine Kettensäge für den Rest der Runde und erziele 3x so vielen Schaden!':30,}
+            'Revolver':{'erhalte einen Revolver für den Rest der Runde der 4x so viel Schaden macht! (schreibe r um Russich Roulette zu spielen)':40,}
+            'Auto':{'Fahre für den Rest der Runde mit einem Auto rum und erschwere deinen Gegner so, dich zu treffen!':50,}
+            'Medizinkoffer':{'Heilt den Pinguin komplett!':50,}
+            'Superman Anzug':{'Werde stärker & schneller & robuster für den ganzen Rest der Runde!':100,}
         }
         self.upgrades = {
             'Stärke':Shop.upgrade_cost,
@@ -244,9 +244,9 @@ class Shop(object):
             'Zielgenauigkeit':Shop.upgrade_cost,
             'Geschwindigkeit':Shop.upgrade_cost
         }
-    def buy(self, player, item):
-        player.remove_coins(self.items[item])
-
+    def buy(self, player, purchase_type, purchase):
+        if purchase_type == 'item':
+            player.add_item(self.items[purchase])
 
 class Game(object):
     def __init__(self, player1, player2):
