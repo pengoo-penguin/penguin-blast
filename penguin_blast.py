@@ -323,9 +323,9 @@ if __name__ == "__main__":
  |    |   \  ___/|   |  \/ /_/  >  |  /  |   |  \  |    |   \    |___/    |    \/        \  |    |   
  |____|    \___  >___|  /\___  /|____/|__|___|  /  |______  /_______ \____|__  /_______  /  |____|   
                \/     \//_____/               \/          \/        \/       \/        \/            
-        _o)(o_
-      -./\\\\//\.-
-       _\_UU_/_         ''')
+        _o) (o_
+      -./\\\\ //\.-
+       _\_U U_/_         ''')
     
     print(f"Hier kämpfen 2 Pinguine gegeneinander! Man kann zwischen mehreren Angriffen auswählen und im Shop die Pinguine upgraden! Jeder Pinguin hat 5 Attribute: Stärke, Verteidigung, Zielgenauigkeit, Geschwindigkeit und Lebenspunkte. Viel Glück!\n")
     
