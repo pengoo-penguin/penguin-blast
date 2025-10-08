@@ -226,6 +226,7 @@ class Bot(Penguin):
 
 
 class Shop(object):
+    upgrade_cost = 10 
     def __init__(self):
         self.items = {
             {'Unsichtbarkeitsumhang':'Der Pinguin wird unsichtbar und kann nicht getroffen werden!'}: 10,
@@ -236,6 +237,12 @@ class Shop(object):
             {'Auto':'Fahre für den Rest der Runde mit einem Auto rum und erschwere deinen Gegner so, dich zu treffen!'}:50,
             {'Medizinkoffer':'Heilt den Pinguin komplett!'}:50,
             {'Superman Anzug':'Werde stärker & schneller & robuster für den ganzen Rest der Runde!'}:100,
+        }
+        self.upgrades = {
+            'Stärke':Shop.upgrade_cost,
+            'Verteidigung':Shop.upgrade_cost,
+            'Zielgenauigkeit':Shop.upgrade_cost,
+            'Geschwindigkeit':Shop.upgrade_cost
         }
     def buy(self, player, item):
         player.remove_coins(self.items[item])
