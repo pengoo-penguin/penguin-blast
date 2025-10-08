@@ -226,7 +226,16 @@ class Bot(Penguin):
         return self.__name
 
     def choose_action(self, opponent):
-        health_ratio = self.get_health() / Penguin.MAX_HEALTH
+    health_ratio = self.get_health() / Penguin.MAX_HEALTH
+    if health_ratio < 0.3 and "Medizinkoffer" in self.get_inventory():
+        return "6"  
+    elif health_ratio < 0.5:
+        return "3"  
+    elif opponent.get_health() < 20:
+        return "1"  
+    else:
+        return "4"  
+        
 
 
 class Shop(object):
