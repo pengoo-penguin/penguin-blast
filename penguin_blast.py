@@ -1,5 +1,4 @@
-# TODO name vlt ändern, bot fertig, display fertig, loop im dpiel, mehrere modus mit merheren runden machen
-
+from colorama import *
 from random import randint
 
 class Penguin(object):
@@ -234,9 +233,9 @@ class Shop(object):
     upgrade_cost = 10 
     def __init__(self):
         self.items = {
-            'Unsichtbarkeitsumhang': 10, # {'Der Pinguin wird unsichtbar und kann nicht getroffen werden!':
-            'Pflaster':10, #{'Heilt 10 HP (nur einmalig nutzbar)': 
-            'Pfeil & Bogen':20, #{'erhalte Pfeil und Bogen für den Rest der Runde und erziele doppelt so vielen Schaden!'
+            'Unsichtbarkeitsumhang': 10,
+            'Pflaster':10,
+            'Pfeil & Bogen':20, 
             'Kettensäge':30, #{'Erhlte eine Kettensäge für den Rest der Runde und erziele 3x so vielen Schaden!':
             'Revolver':40, #{'erhalte einen Revolver für den Rest der Runde der 4x so viel Schaden macht! (schreibe r um Russich Roulette zu spielen)':
             'Auto':50, #{'Fahre für den Rest der Runde mit einem Auto rum und erschwere deinen Gegner so, dich zu treffen!':
@@ -251,39 +250,46 @@ class Shop(object):
         ]
     def buy(self, player, purchase_type, purchase):
         if purchase_type == 'item':
-            if player.get_coins() >= self.items.get(purchase):
-                player.add_item(self.items[purchase])
-                player.remove_coins(self.items.get(purchase))
+            if purchase in self.items:
+                if player.get_coins() >= self.items[purchase]:
+                    player.add_item(purchase)
+                    player.remove_coins(self.items[purchase])
+                else:
+                    print(f"{player.get_name()} hat nicht genug Geld.")
             else:
-                print(player.get_name(), 'hat nicht genug Geld.'
-        if purchase_type=='upgrade':
-            if purchase==self.upgrades[0]:
-                if player.get_coins() >= Shop.upgrade_cost:
-                    player.set_strength(10)
-                    player.remove_coins(Shop.upgrade_cost)
+                print(f"{purchase} ist kein gültiges Item.")
+        elif purchase_type == 'upgrade':
+            if purchase in self.upgrades:
+                if player.get_coins() >= self.upgrade_cost:
+                    if purchase == 'Stärke':
+                        player.set_strength(10)
+                    elif purchase == 'Verteidigung':
+                        player.set_defence(10)
+                    elif purchase == 'Zielgenauigkeit':
+                        player.set_aim(10)
+                    elif purchase == 'Geschwindigkeit':
+                        player.set_speed(10)
+                    player.remove_coins(self.upgrade_cost)
                 else:
-                    print(player.get_name(), 'hat nicht genug Geld.'
-                    
-            if purchase==self.upgrades[1]:
-                if player.get_coins >= Shop.upgrade_cost:
-                    player.set_defence(10)
-                    player.remove_coins(Shop.upgrade_cost)
-                else:
-                    print(player.get_name(), 'hat nicht genug Geld.'
-            
-            if purchase==self.upgrades[2]:
-                if player.get_coins >= Shop.upgrade_cost:
-                    player.set_aim(10)
-                    player.remove_coins(Shop.upgrade_cost)
-                else:
-                    print(player.get_name(), 'hat nicht genug Geld.'
-            
-            if purchase==self.upgrades[3]:
-                if player.get_coins >= Shop.upgrade_cost:
-                    player.set_speed(10)
-                    player.remove_coins(Shop.upgrade_cost)
-                else:
-                    print(player.get_name(), 'hat nicht genug Geld.'
+                    print(f"{player.get_name()} hat nicht genug Geld.")
+            else:
+                print(f"{purchase} ist kein gültiges Upgrade.")
+    
+    def __str__(self):
+        return f'''
+        –––––––––––––––––––––––––SHOP–––––––––––––––––––––––––––––
+        Unsichtbarkeitsumhang                           10 💵
+        (Der Pinguin wird unsichtbar und 
+        kann nicht getroffen werden)
+        ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+        Pflaster                                        10 💵
+        (Heilt 10 HP (nur einmalig nutzbar))
+        ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+        Pfeil & Bogen                                   10 💵
+        (erhalte Pfeil und Bogen für den
+        Rest der Runde und erziele doppelt
+        so vielen Schaden!)
+        '''
             
                 
 class Game(object):
@@ -300,7 +306,7 @@ class Game(object):
             self.attacking_player = self.player2
             self.defending_player = self.player1
             
-        prompt = (f"{self.attacking_player.get_name()}, Wähle einen Angriff aus:\n"
+        prompt = (f"\n{self.attacking_player.get_name()}, Wähle einen Angriff aus:\n"
                  "1: Normaler Angriff (Schaden basiert auf den Attributen)\n"
                  "2: Fish Slap (garantierter Treffer mit wenigen Schaden)\n"
                  "3: Recharge (erhöht den Multiplikator für den nächsten Angriff)\n"
@@ -360,6 +366,8 @@ class Game(object):
                     f"Zielgenauigkeit: {self.attacking_player.get_aim()}\n"
                     f"Geschwindigkeit: {self.attacking_player.get_speed()}\n"
                     f"Lebenspunkte: {self.attacking_player.get_health()}\n")
+            elif attacking_mode == "6":
+                print(Shop)
             else:
                 print(f"Ungültige Eingabe. Bitte wähle eine Zahl zwischen 1 und 5.")
 
@@ -413,7 +421,8 @@ if __name__ == "__main__":
     print(f"Der zweite Pinguin ist {player2_name}!")
     print(player2)
 
-    game = Game(player1, player2)
+    shop = Shop()
+    game = Game(player1, player2, shop)
     while player1.alive and player2.alive:
         game.start_round()
     print("Spiel beendet!")
