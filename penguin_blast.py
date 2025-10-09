@@ -633,8 +633,8 @@ if __name__ == "__main__":
     
         
         if player1.wins >= rounds_to_win:
-            print(f"\n{'🎉'*20}")
-            print(f"🏆 {player1.get_name()} IST DER CHAMPION! 🏆".center(60))
+			print('Das Spiel ist vorbei')
+            print()
             print(f"{'🎉'*20}\n")
             print(player1)
         else:
@@ -645,8 +645,8 @@ if __name__ == "__main__":
         
         print(f"\nEndstand: {player1.get_name()} {player1.wins} : {player2.wins} {player2.get_name()}")
         
-        # ✅ FRAGE OB NOCHMAL SPIELEN
-        print("\n" + "="*60)
+
+
         play_again = ""
         while play_again not in ["j", "n"]:
             play_again = input("Nochmal spielen? (j/n): ").lower()
