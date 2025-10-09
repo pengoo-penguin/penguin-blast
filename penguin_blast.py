@@ -550,17 +550,16 @@ if __name__ == "__main__":
 
         shop = Shop()
         
-        # Best of 3 - First to 2 wins!
+
         rounds_to_win = 2
         battle_number = 1
         
         while player1.wins < rounds_to_win and player2.wins < rounds_to_win:
-            print(f"\n{'='*60}")
-            print(f"🏆 KAMPF #{battle_number} 🏆".center(60))
+
             print(f"{player1.get_name()}: {player1.wins} Siege | {player2.get_name()}: {player2.wins} Siege".center(60))
-            print(f"{'='*60}\n")
+
             
-            # Reset für neuen Kampf
+
             player1._Penguin__healthpoints = Penguin.MAX_HEALTH
             player1.alive = True
             player1.status = 'normal'
@@ -569,28 +568,28 @@ if __name__ == "__main__":
             player2.alive = True
             player2.status = 'normal'
             
-            # Neues Spiel für diesen Kampf
+
             game = Game(player1, player2, shop)
             turn_counter = 0
             
-            # Kampf bis einer stirbt
+
             while player1.alive and player2.alive:
                 game.start_turn()
                 turn_counter += 1
             
-            # Gewinner dieses Kampfes
+
             if player1.alive:
                 player1.wins += 1
                 winner = player1
                 loser = player2
-                print(f"\n🎉 {player1.get_name()} gewinnt Kampf #{battle_number}! 🎉")
+                print(f"\n {player1.get_name()} gewinnt Runde #{battle_number}! ")
             else:
                 player2.wins += 1
                 winner = player2
                 loser = player1
-                print(f"\n🎉 {player2.get_name()} gewinnt Kampf #{battle_number}! 🎉")
+                print(f"\n {player2.get_name()} gewinnt Runde #{battle_number}! ")
             
-            # Belohnungen
+
             winner_coins = 50 + (turn_counter * 5)
             loser_coins = 20
             
@@ -600,7 +599,7 @@ if __name__ == "__main__":
             print(f"💰 {winner.get_name()} erhält {winner_coins} 💵")
             print(f"💰 {loser.get_name()} erhält {loser_coins} 💵")
             
-            # Prüfe ob jemand gewonnen hat
+
             if player1.wins >= rounds_to_win or player2.wins >= rounds_to_win:
                 break
             
