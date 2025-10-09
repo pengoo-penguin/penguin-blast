@@ -612,7 +612,7 @@ if __name__ == "__main__":
             round_number += 1
             
             if player1.wins < rounds_to_win and player2.wins < rounds_to_win:
-                input("\n⏸️ Drücke Enter für den nächsten Kampf...")
+                input("\n Drücke Enter für die nächste Runde")
         
 
     
