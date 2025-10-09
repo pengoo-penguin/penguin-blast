@@ -423,8 +423,17 @@ class Game(object):
                 self.defending_player.take_damage(damage)
                 print(f"{self.attacking_player.get_name()} hat {self.defending_player.get_name()} mit einem Fisch abgeworfen! {damage} Schaden verursacht!")
                 
+                print(self.attacking_player.get_name())
+                self.attacking_playeer.status = 'happy'
+                print(self.attacking_player)
+                
+                print(\nself.defending_player.get_name())
+                self.defending_player.status = 'slapped'
+                print(self.defending_player)
+                
                 if not self.defending_player.alive:
                     print(f"{self.defending_player.get_name()} ist tot!")
+                    print(self.defending_player)
                 valid_input = True
 
             elif attacking_mode == "3":
