@@ -596,27 +596,12 @@ if __name__ == "__main__":
             winner.add_coins(winner_coins)
             loser.add_coins(loser_coins)
             
-            print(f"💰 {winner.get_name()} erhält {winner_coins} 💵")
-            print(f"💰 {loser.get_name()} erhält {loser_coins} 💵")
+            print(f" {winner.get_name()} erhält {winner_coins} 💵")
+            print(f" {loser.get_name()} erhält {loser_coins} 💵")
             
 
             if player1.wins >= rounds_to_win or player2.wins >= rounds_to_win:
                 break
-            
-            # Shop-Angebot
-            if isinstance(winner, Player):
-                shop_choice = input(f"\n{winner.get_name()}, möchtest du den Shop besuchen? (j/n): ")
-                if shop_choice.lower() == 'j':
-                    print(shop)
-                    print(f"Du hast {winner.get_coins()} 💵")
-                    purchase = input("Was möchtest du kaufen? (1-12 oder 0 für nichts): ")
-                    if purchase != '0' and purchase.isdigit():
-                        purchase_num = int(purchase)
-                        if 1 <= purchase_num <= 8:
-                            shop.buy(winner, 'item', purchase_num)
-                        elif 9 <= purchase_num <= 12:
-                            upgrades = {9: 'Stärke', 10: 'Verteidigung', 11: 'Zielgenauigkeit', 12: 'Geschwindigkeit'}
-                            shop.buy(winner, 'upgrade', upgrades[purchase_num])
             
 
             if isinstance(winner, Bot):
