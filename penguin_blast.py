@@ -505,11 +505,11 @@ if __name__ == "__main__":
     print(f"Jeder Pinguin hat 5 Attribute: Stärke, Verteidigung, Zielgenauigkeit, Geschwindigkeit und Lebenspunkte.")
     print(f"Der erste Pinguin, der 2 Runden gewinnt, gewinnt das Spiel! Viel Glück!\n")
     
-    # ✅ HAUPT-GAME-LOOP
+    
     keep_playing = True
     
     while keep_playing:
-        # ERSTELLUNG DER SPIELER
+        
         player1_type = ""
         while player1_type not in ["1", "2"]:
             player1_type = input(f"\nWähle die Art des ersten Pinguins (1: Spieler, 2: Bot): ")
@@ -552,7 +552,7 @@ if __name__ == "__main__":
         
 
         rounds_to_win = 2
-        battle_number = 1
+        round_number = 1
         
         while player1.wins < rounds_to_win and player2.wins < rounds_to_win:
 
@@ -582,12 +582,12 @@ if __name__ == "__main__":
                 player1.wins += 1
                 winner = player1
                 loser = player2
-                print(f"\n {player1.get_name()} gewinnt Runde #{battle_number}! ")
+                print(f"\n {player1.get_name()} gewinnt Runde #{round_number}! ")
             else:
                 player2.wins += 1
                 winner = player2
                 loser = player1
-                print(f"\n {player2.get_name()} gewinnt Runde #{battle_number}! ")
+                print(f"\n {player2.get_name()} gewinnt Runde #{round_number}! ")
             
 
             winner_coins = 50 + (turn_counter * 5)
@@ -618,21 +618,19 @@ if __name__ == "__main__":
                             upgrades = {9: 'Stärke', 10: 'Verteidigung', 11: 'Zielgenauigkeit', 12: 'Geschwindigkeit'}
                             shop.buy(winner, 'upgrade', upgrades[purchase_num])
             
-            # Bot kauft automatisch
+
             if isinstance(winner, Bot):
                 purchase = winner.choose_purchase()
                 if purchase:
                     shop.buy(winner, 'item', purchase)
             
-            battle_number += 1
+            round_number += 1
             
             if player1.wins < rounds_to_win and player2.wins < rounds_to_win:
                 input("\n⏸️ Drücke Enter für den nächsten Kampf...")
         
-        # FINALER GEWINNER
-        print("\n" + "="*60)
-        print("🏆🎊 SPIEL BEENDET! 🎊🏆".center(60))
-        print("="*60)
+
+    
         
         if player1.wins >= rounds_to_win:
             print(f"\n{'🎉'*20}")
