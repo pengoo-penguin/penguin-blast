@@ -72,7 +72,7 @@ class Penguin(object):
             
             '''
             return ' o \n\n'
-        elif self.status == 'healed':
+        elif self.status == 'happy':
             '''
             (^_
             //\
@@ -634,13 +634,13 @@ if __name__ == "__main__":
         
         if player1.wins >= rounds_to_win:
 			print('Das Spiel ist vorbei')
-            print()
-            print(f"{'🎉'*20}\n")
+            print(player1.get_name(), 'hat das Spiel gewonenn)
+            player1.status = 'happy'
             print(player1)
         else:
-            print(f"\n{'🎉'*20}")
-            print(f"🏆 {player2.get_name()} IST DER CHAMPION! 🏆".center(60))
-            print(f"{'🎉'*20}\n")
+			print('Das Spiel ist vorbei')
+            print(player2.get_name(), 'hat das Spiel gewonenn)
+			player2.status = 'happy'
             print(player2)
         
         print(f"\nEndstand: {player1.get_name()} {player1.wins} : {player2.wins} {player2.get_name()}")
