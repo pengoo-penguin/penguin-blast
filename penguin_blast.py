@@ -537,7 +537,7 @@ if __name__ == "__main__":
             player1 = Bot(player1_name)
 
         print(f"\nDer erste Pinguin ist {player1_name}!")
-        print(player1)
+        print(fore.magenta+player1)
 
         player2_type = ""
         while player2_type not in ["1", "2"]:
@@ -556,7 +556,7 @@ if __name__ == "__main__":
                 player2_name = "Bot_2"
             else:
                 player2_name = "Bot_1"
-            player2 = Bot(player2_name)
+            player2 = Bot(fore.green+player2_name)
 
         print(f"\nDer zweite Pinguin ist {player2_name}!")
         print(player2)
