@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from random import randint
-from colorama import *
+from colorama import fore
 
 class Penguin(object):
     MAX_HEALTH = 100
