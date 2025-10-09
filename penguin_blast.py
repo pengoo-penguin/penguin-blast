@@ -234,7 +234,10 @@ class Bot(Penguin):
         if health_ratio < 0.3 and "Medizinkoffer" in self.get_inventory():
             return "6"  
         elif health_ratio < 0.5:
-            return "3"  
+            if self.multiplier > 4:
+            		return "1"
+            else	:
+                return "3"  
         elif opponent.get_health() < 20:
             return "1"  
         else:
@@ -602,12 +605,7 @@ if __name__ == "__main__":
 
             if player1.wins >= rounds_to_win or player2.wins >= rounds_to_win:
                 break
-            
 
-            if isinstance(winner, Bot):
-                purchase = winner.choose_purchase()
-                if purchase:
-                    shop.buy(winner, 'item', purchase)
             
             round_number += 1
             
